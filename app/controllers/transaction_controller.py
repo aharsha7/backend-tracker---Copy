@@ -51,7 +51,7 @@ def get_transactions():
             "date": txn.date.strftime("%Y-%m-%d"),
             "amount": txn.amount,
             "transaction_type": txn.transaction_type,
-            "category": txn.category.name,
+            "category": txn.category,
             "description": txn.description
         })
 

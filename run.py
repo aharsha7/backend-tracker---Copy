@@ -7,11 +7,10 @@ from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from app.config import Config
-from app.models import db
 from app.routes.auth_routes import auth_bp
 from app.routes.transaction_routes import transaction_bp
 from app.routes.category_routes import category_bp
-from app.extensions import db, migrate
+from app.extensions import db, migrate, jwt
 
 
 def create_app():
@@ -20,6 +19,7 @@ def create_app():
 
     db.init_app(app)
     migrate.init_app(app, db)
+    jwt.init_app(app)
     JWTManager(app)
     CORS(app)
     
@@ -41,3 +41,4 @@ if __name__ == "__main__":
         db.create_all()
         
     app.run(debug=True)
+    

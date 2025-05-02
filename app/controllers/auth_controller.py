@@ -6,8 +6,6 @@ from datetime import timedelta
 
 def signup():
     data = request.get_json()
-
-    # Check if all necessary data is provided
     name = data.get('name')
     email = data.get('email')
     password = data.get('password')
@@ -19,26 +17,37 @@ def signup():
     if password != confirm_password:
         return jsonify({"message": "Passwords do not match"}), 400
 
-    # Check if the email already exists
     if User.query.filter_by(email=email).first():
         return jsonify({"message": "Email already registered"}), 400
 
-    # Create a new user instance
+    if User.query.filter_by(name=name).first():
+        return jsonify({"error": "Username already exists"}), 409
+
     new_user = User(name=name, email=email)
     new_user.set_password(password)
 
-    # Add user to the database
     try:
         db.session.add(new_user)
         db.session.commit()
+
+        access_token = create_access_token(identity=new_user.id, expires_delta=timedelta(days=1))
+
+        response = {
+            "token": access_token,
+            "user": {
+                "id": new_user.id,
+                "name": new_user.name,
+                "email": new_user.email
+            }
+        }
+
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "An error occurred while registering the user", "error": str(e)}), 500
     finally:
         db.session.remove()
 
-    return jsonify({"message": "User registered successfully"}), 201
-
+    return jsonify(response), 201
 
 def login():
     data = request.get_json()

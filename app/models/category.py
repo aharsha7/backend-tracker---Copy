@@ -9,11 +9,10 @@ class Category(db.Model):
     def __repr__(self):
         return f'<Category {self.name}>'
 
-# Predefined categories (Food, Travel, Shopping, Entertainment)
 def create_default_categories():
     categories = ['Food', 'Travel', 'Shopping', 'Entertainment']
     for category_name in categories:
         if not Category.query.filter_by(name=category_name).first():
             category = Category(name=category_name)
             db.session.add(category)
-    db.session.commit()
+            db.session.commit()

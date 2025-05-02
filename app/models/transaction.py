@@ -1,7 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
-from app.extensions import db
-
-db = SQLAlchemy()
+from app.extensions import db   
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'
@@ -13,7 +10,7 @@ class Transaction(db.Model):
     category = db.Column(db.String(50), nullable=False)  
     description = db.Column(db.String(255), nullable=True)  
     date = db.Column(db.Date, nullable=False)
-
+    
     def __init__(self, amount, transaction_type, category, date, description=None):
         self.amount = amount
         self.transaction_type = transaction_type

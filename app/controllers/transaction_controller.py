@@ -57,24 +57,52 @@ def get_transactions():
 
     return jsonify(result), 200
 
-# Update Transaction
+def get_transaction_by_id(transaction_id):
+    transaction = Transaction.query.get_or_404(transaction_id)
+
+    return jsonify({
+        'id': transaction.id,
+        'amount': transaction.amount,
+        'transaction_type': transaction.transaction_type,
+        'category': transaction.category,
+        'description': transaction.description,
+        'date': transaction.date.isoformat() if transaction.date else None
+    })
+
 def update_transaction(transaction_id):
-    transaction = Transaction.query.filter_by(id=transaction_id).first()
-
-    if not transaction:
-        return jsonify({"message": "Transaction not found"}), 404
-
+    transaction = Transaction.query.get_or_404(transaction_id)
     data = request.get_json()
 
-    transaction.date = data.get('date', transaction.date)
+    if not data:
+        return jsonify({'error': 'Invalid JSON input'}), 400
+
     transaction.amount = data.get('amount', transaction.amount)
     transaction.transaction_type = data.get('transaction_type', transaction.transaction_type)
-    transaction.category_id = data.get('category_id', transaction.category_id)
     transaction.description = data.get('description', transaction.description)
+
+    # Category handling
+    category_name = data.get('category')
+    if category_name:
+        category = Category.query.filter_by(name=category_name).first()
+        if not category:
+            # auto-create category if not exists
+            category = Category(name=category_name)
+            db.session.add(category)
+            db.session.commit()  # commit to get the ID
+        transaction.category_id = category.id
+
+    # Date parsing (optional)
+    date_str = data.get('date')
+    if date_str:
+        from datetime import datetime
+        try:
+            transaction.date = datetime.fromisoformat(date_str)
+        except ValueError:
+            return jsonify({'error': 'Invalid date format'}), 400
 
     db.session.commit()
 
-    return jsonify({"message": "Transaction updated successfully"}), 200
+    return jsonify({'message': 'Transaction updated successfully'})
 
 # Delete Transaction
 def delete_transaction(transaction_id):

@@ -57,6 +57,7 @@ def get_transactions():
 
     return jsonify(result), 200
 
+# Get Transaction by ID
 def get_transaction_by_id(transaction_id):
     transaction = Transaction.query.get_or_404(transaction_id)
 
@@ -69,6 +70,7 @@ def get_transaction_by_id(transaction_id):
         'date': transaction.date.isoformat() if transaction.date else None
     })
 
+# Update Transaction
 def update_transaction(transaction_id):
     transaction = Transaction.query.get_or_404(transaction_id)
     data = request.get_json()

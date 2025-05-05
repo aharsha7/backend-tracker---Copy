@@ -1,5 +1,5 @@
-from app.extensions import db   
-
+from app.extensions import db
+from app.models.user import User  
 class Transaction(db.Model):
     __tablename__ = 'transactions'
 
@@ -10,19 +10,21 @@ class Transaction(db.Model):
     category = db.Column(db.String(50), nullable=False)  
     description = db.Column(db.String(255), nullable=True)  
     date = db.Column(db.Date, nullable=False)
-    
+
     def __init__(self, amount, transaction_type, category, date, description=None):
         self.amount = amount
         self.transaction_type = transaction_type
-        self.category_id = 1
+        
         if category == 'food':
-            category_id = 1
+            self.category_id = 1
         elif category == 'travel':
-            category_id = 2
+            self.category_id = 2
         elif category == 'shopping':
-            category_id = 3
+            self.category_id = 3
         elif category == 'entertainment':
-            category_id = 4
+            self.category_id = 4
+        else:
+            self.category_id = 1    
         self.category = category
         self.date = date
         self.description = description

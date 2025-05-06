@@ -85,14 +85,8 @@ def update_transaction(transaction_id):
     # Category handling
     category_name = data.get('category')
     if category_name:
-        category = Category.query.filter_by(name=category_name).first()
-        if not category:
-            # auto-create category if not exists
-            category = Category(name=category_name)
-            db.session.add(category)
-            db.session.commit()  # commit to get the ID
-        transaction.category_id = category.id
-
+      transaction.category = category_name  
+      
     # Date parsing (optional)
     date_str = data.get('date')
     if date_str:

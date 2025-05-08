@@ -1,8 +1,8 @@
 from flask import request, jsonify
 from app.models.user import User
 from app.extensions import db
-from flask_jwt_extended import create_access_token
-from datetime import timedelta
+import jwt
+from datetime import datetime, timedelta
 
 def signup():
     data = request.get_json()
@@ -30,8 +30,14 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
 
-        access_token = create_access_token(identity=new_user.id, expires_delta=timedelta(days=1))
+        # FIX: Pass user.id directly (or str(user.id))
+        access_payload = {
+            'id': new_user.id,
+            'type': 'access_token',
+            'exp': datetime.utcnow() + timedelta(minutes=600)  # Token expires in 30 minutes
+        }
 
+        access_token = jwt.encode(access_payload, 'app123', algorithm='HS256')
         response = {
             "token": access_token,
             "user": {
@@ -51,22 +57,29 @@ def signup():
 
 def login():
     data = request.get_json()
-
     email = data.get('email')
     password = data.get('password')
 
-    # Check if email and password are provided
     if not all([email, password]):
         return jsonify({"message": "Email and Password are required"}), 400
 
-    # Retrieve the user by email
     user = User.query.filter_by(email=email).first()
 
-    # Check if the user exists and if the password matches
     if user and user.check_password(password):
-        access_token = create_access_token(identity=user.id, expires_delta=timedelta(days=1))
+        # FIX: Pass user.id directly (or str(user.id))
+
+
+        access_payload = {
+            'id': user.id,
+            'type': 'access_token',
+            'exp': datetime.utcnow() + timedelta(minutes=600)  # Token expires in 30 minutes
+        }
+
+        access_token = jwt.encode(access_payload, 'app123', algorithm='HS256')
+
+
         return jsonify({
-            "access_token": access_token,
+            "access_token": access_token, 
             "user": {
                 "id": user.id,
                 "name": user.name,

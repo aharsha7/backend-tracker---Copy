@@ -10,7 +10,7 @@ class Category(db.Model):
         return f'<Category {self.name}>'
 
 def create_default_categories():
-    categories = ['Food', 'Travel', 'Shopping', 'Entertainment']
+    categories = ['Food', 'Travel', 'General', 'Shopping']
     for category_name in categories:
         if not Category.query.filter_by(name=category_name).first():
             category = Category(name=category_name)

@@ -64,11 +64,14 @@ def login():
         return jsonify({"message": "Email and Password are required"}), 400
 
     user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'Email ID is incorrect'}), 401
 
+    if not user.check_password(password):
+        return jsonify({'error': 'Password is incorrect'}), 401
+    
     if user and user.check_password(password):
-        # FIX: Pass user.id directly (or str(user.id))
-
-
+        
         access_payload = {
             'id': user.id,
             'type': 'access_token',

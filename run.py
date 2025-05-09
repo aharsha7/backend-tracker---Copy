@@ -1,6 +1,6 @@
 import pymysql
 pymysql.install_as_MySQLdb()
-import os
+
 from flask import Flask
 # from flask_sqlalchemy import SQLAlchemy
 # from flask_migrate import Migrate
@@ -19,13 +19,12 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-
-    # Update CORS to allow frontend link
-    CORS(app, supports_credentials=True, origins=["https://frontend-budget.vercel.app"])
-
+    CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+    
     app.register_blueprint(auth_bp)
     app.register_blueprint(transaction_bp)
     app.register_blueprint(category_bp)
+    
     
     @app.route('/')
     def home():
@@ -34,12 +33,11 @@ def create_app():
     return app
 
 if __name__ == "__main__":
+    
     app = create_app()
     
-    # Create DB tables on first run
     with app.app_context():
         db.create_all()
-
-    # Change app.run() to listen on 0.0.0.0 with dynamic port for Render
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host="0.0.0.0", port=port)
+        
+    app.run(debug=True)
+    

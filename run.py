@@ -29,7 +29,6 @@ def create_app():
     @app.route('/')
     def home():
         return "Budget Tracker Backend is Running 🚀"
-
     return app
 
 if __name__ == "__main__":

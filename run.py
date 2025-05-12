@@ -19,7 +19,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    CORS(app, supports_credentials=True, origins=["https://frontend-budget.vercel.app/"])
+    CORS(app, supports_credentials=True, origins=["http://localhost:5173", "https://frontend-budget.vercel.app/"])
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(transaction_bp)

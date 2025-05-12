@@ -1,8 +1,17 @@
 from flask import request, jsonify
 from app.models.user import User
 from app.extensions import db
-import jwt
+import jwt, os
 from datetime import datetime, timedelta
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+def generate_token(user_id):
+    payload = {
+        'user_id': user_id,
+        'exp': datetime.utcnow() + timedelta(hours=1)  # Token valid for 1 hour
+    }
+    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+    return token
 
 def signup():
     data = request.get_json()
@@ -34,7 +43,7 @@ def signup():
         access_payload = {
             'id': new_user.id,
             'type': 'access_token',
-            'exp': datetime.utcnow() + timedelta(minutes=600)  # Token expires in 30 minutes
+            'exp': datetime.utcnow() + timedelta(minutes=600) 
         }
 
         access_token = jwt.encode(access_payload, 'app123', algorithm='HS256')
@@ -75,7 +84,7 @@ def login():
         access_payload = {
             'id': user.id,
             'type': 'access_token',
-            'exp': datetime.utcnow() + timedelta(minutes=600)  # Token expires in 30 minutes
+            'exp': datetime.utcnow() + timedelta(minutes=600)  
         }
 
         access_token = jwt.encode(access_payload, 'app123', algorithm='HS256')

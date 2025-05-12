@@ -78,7 +78,7 @@ def get_transactions():
 
     return jsonify(result), 200
 
-# Get Transaction by ID
+# Get User by ID
 def get_user_id_from_token():
     auth_header = request.headers.get('Authorization')
     if not auth_header or not auth_header.startswith("Bearer "):

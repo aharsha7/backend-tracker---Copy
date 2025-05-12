@@ -2,8 +2,6 @@ import pymysql
 pymysql.install_as_MySQLdb()
 import os
 from flask import Flask
-# from flask_sqlalchemy import SQLAlchemy
-# from flask_migrate import Migrate
 from flask_cors import CORS
 from app.config import Config
 from app.routes.auth_routes import auth_bp
@@ -19,7 +17,16 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    CORS(app, supports_credentials=True, origins=["http://localhost:5173", "https://frontend-budget.vercel.app/"])
+    
+    # Fix: Remove trailing slash in the origin URL
+    CORS(app, 
+     resources={r"/*": {
+         "origins": ["http://localhost:5173", "https://frontend-budget.vercel.app"],
+         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+         "allow_headers": ["Content-Type", "Authorization"],
+         "supports_credentials": True
+     }})
+    # CORS(app, supports_credentials=True, origins=["http://localhost:5173", "https://frontend-budget.vercel.app"])
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(transaction_bp)
@@ -41,4 +48,3 @@ if __name__ == "__main__":
     # Change app.run() to listen on 0.0.0.0 with dynamic port for Render
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=True, host="0.0.0.0", port=port)
-    

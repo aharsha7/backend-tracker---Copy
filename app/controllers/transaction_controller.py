@@ -111,6 +111,7 @@ def get_transaction_by_id(transaction_id):
     transaction_data = {
         "id": transaction.id,
         "amount": transaction.amount,
+        "transaction_type": transaction.transaction_type,
         "category": transaction.category,
         "description": transaction.description,
         "date": transaction.date.isoformat()

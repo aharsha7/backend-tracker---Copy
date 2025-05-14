@@ -62,7 +62,7 @@ def get_transactions():
         return jsonify({"error": "Invalid token"}), 401
 
     user_id = decoded.get('id')
-    if not id:
+    if not user_id:
         return jsonify({"error": "Invalid token payload"}), 401
 
     transactions = Transaction.query.filter_by(user_id=user_id).all()
